@@ -16,25 +16,28 @@ paginate:
 
 {% include base_path %}
 
-<h3 class="archive__subtitle">The Archives</h3>
+<h3 class="archive__subtitle">{{ site.data.ui-text[site.locale].recent_posts }}</h3>
 
-{% for arc in paginator.archive %}
+{% for post in paginator.posts %}
   {% include base_path %}
 
-  {% if arc.header.teaser %}
-    {% capture teaser %}{{ arc.header.teaser }}{% endcapture %}
+  {% if post.header.teaser %}
+    {% capture teaser %}{{ post.header.teaser }}{% endcapture %}
   {% else %}
     {% capture teaser %}{{ site.teaser }}{% endcapture %}
   {% endif %}
 
-  <div class="grid__item">
-    {% if arc.link %}
-      <a href="{{ arc.link }}" target="_blank">
+  <div class="{{ include.type | default: "list" }}__item">
+    {% if post.link %}
+      <a href="{{ post.link }}" target="_blank">
     {% else %}
-      <a href="{{ base_path }}{{ arc.url }}">
+      <a href="{{ base_path }}{{ post.url }}">
     {% endif %}
       <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
-        <!--{% if teaser != blank %}
+        {% if post.title %}
+        <h2 class="archive__item-title" itemprop="headline">{% if post.id %}{{ post.title | markdownify | remove: "<p>" | remove: "</p>" }}{% else %}{{ post.title }}{% endif %}{% if post.link %}<i class="fa fa-star" aria-hidden="true"></i>{% endif %}</h2>
+        {% endif %}
+        {% if include.type == "grid" and teaser != blank %}
           <div class="archive__item-teaser">
             <img src=
               {% if teaser contains "http" %}
@@ -44,17 +47,23 @@ paginate:
               {% endif %}
               alt="">
           </div>
-        {% endif %}-->
-        {% if arc.title %}
-        <h2 class="archive__item-title" itemprop="headline">{% if arc.id %}{{ arc.title | markdownify | remove: "<p>" | remove: "</p>" }}{% else %}{{ arc.title }}{% endif %}{% if arc.link %}<i class="fa fa-star" aria-hidden="true"></i>{% endif %}</h2>
         {% endif %}
-        {% if arc.read_time %}
-          <p class="page__meta"><i class="fa fa-clock-o" aria-hidden="true"></i> {% include read-time.html %}</p>
+        {% if post.modified %}
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i></strong> <time datetime="{{ post.modified | date: "%Y-%m-%d" }}">{{ post.modified | date: "%B %d, %Y" }}</time></p>
+        {% elsif post.date %}
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i></strong> <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B %d, %Y" }}</time></p>
         {% endif %}
-        {% if arc.excerpt %}<p class="archive__item-excerpt" itemprop="description">{{ arc.excerpt | markdownify | strip_html | truncate: 160 }}</p>{% endif %}
+        {% if post.content contains '<!--more-->' %}
+            <div class="archive__item-excerpt" itemprop="description">{{ post.content | split:'<!--more-->' | first | markdownify }}</div>
+             <i><a href="{{ post.url }}">[Read more]</a></i>
+        {% else %}
+            <div class="archive__item-excerpt" itemprop="description">{{ post.content | | markdownify | truncatewords: 75 }}</div>
+             <i><a href="{{ post.url }}">[Read more]</a></i>
+        {% endif %}
       </article>
     </a>
   </div>
+  <hr>
 {% endfor %}
 
 {% include base_path %}
