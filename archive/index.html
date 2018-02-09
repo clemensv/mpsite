@@ -57,7 +57,7 @@ paginate:
             <div class="archive__item-excerpt" itemprop="description">{{ post.content | split:'<!--more-->' | first | markdownify }}</div>
              <i><a href="{{ post.url }}">[Read more]</a></i>
         {% else %}
-            <div class="archive__item-excerpt" itemprop="description">{{ post.content | | markdownify | truncatewords: 75 }}</div>
+            <div class="archive__item-excerpt" itemprop="description">{{ post.content | markdownify | truncatewords: 75 }}</div>
              <i><a href="{{ post.url }}">[Read more]</a></i>
         {% endif %}
       </article>
