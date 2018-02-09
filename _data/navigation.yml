@@ -1,0 +1,14 @@
+# main links links
+main:
+  - title: "Overview"
+    url: /overview/
+
+  - title: "Resources"
+    url: /resources
+
+  - title: "Specifications"
+    url: /specifications
+
+  - title: "Blog"
+    url: /blog/
+

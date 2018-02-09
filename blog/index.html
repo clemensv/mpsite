@@ -1,0 +1,138 @@
+---
+layout: archive
+author_profile: true
+paginate:
+  collection: posts
+  per_page: 10
+  limit: false
+  permalink: /page:num/
+header:
+  overlay_color: "#3333cc"
+  overlay_filter: "0.5"
+  overlay_image: https://c2.staticflickr.com/2/1681/24891072275_4e1050b14e_h.jpg
+  caption: "Photo: Cascade Mountain Range"
+
+---
+
+{% include base_path %}
+
+<h3 class="archive__subtitle">{{ site.data.ui-text[site.locale].recent_posts }}</h3>
+
+{% for post in paginator.posts %}
+  {% include base_path %}
+
+  {% if post.header.teaser %}
+    {% capture teaser %}{{ post.header.teaser }}{% endcapture %}
+  {% else %}
+    {% capture teaser %}{{ site.teaser }}{% endcapture %}
+  {% endif %}
+
+  <div class="{{ include.type | default: "list" }}__item">
+    {% if post.link %}
+      <a href="{{ post.link }}" target="_blank">
+    {% else %}
+      <a href="{{ base_path }}{{ post.url }}">
+    {% endif %}
+      <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+        {% if post.title %}
+        <h2 class="archive__item-title" itemprop="headline">{% if post.id %}{{ post.title | markdownify | remove: "<p>" | remove: "</p>" }}{% else %}{{ post.title }}{% endif %}{% if post.link %}<i class="fa fa-star" aria-hidden="true"></i>{% endif %}</h2>
+        {% endif %}
+        {% if include.type == "grid" and teaser != blank %}
+          <div class="archive__item-teaser">
+            <img src=
+              {% if teaser contains "http" %}
+                "{{ teaser }}"
+              {% else %}
+                "{{ teaser | prepend: "/images/" | prepend: base_path }}"
+              {% endif %}
+              alt="">
+          </div>
+        {% endif %}
+        {% if post.modified %}
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i></strong> <time datetime="{{ post.modified | date: "%Y-%m-%d" }}">{{ post.modified | date: "%B %d, %Y" }}</time></p>
+        {% elsif post.date %}
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i></strong> <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B %d, %Y" }}</time></p>
+        {% endif %}
+        {% if post.content contains '<!--more-->' %}
+            <div class="archive__item-excerpt" itemprop="description">{{ post.content | split:'<!--more-->' | first | markdownify }}</div>
+             <i><a href="{{ post.url }}">[Read more]</a></i>
+        {% else %}
+            <div class="archive__item-excerpt" itemprop="description">{{ post.content | markdownify | truncatewords: 75 }}</div>
+             <i><a href="{{ post.url }}">[Read more]</a></i>
+        {% endif %}
+      </article>
+    </a>
+  </div>
+  <hr>
+{% endfor %}
+
+{% include base_path %}
+
+{% if paginator.total_pages > 1 %}
+<nav class="pagination">
+  <ul>
+    {% comment %} Link for previous page {% endcomment %}
+    {% if paginator.previous_page %}
+      {% if paginator.previous_page == 1 %}
+        <li><a href="/archive/">{{ site.data.ui-text[site.locale].pagination_previous }}</a></li>
+      {% else %}
+        <li><a href="/archive/page{{ paginator.previous_page }}/">{{ site.data.ui-text[site.locale].pagination_previous }}</a></li>
+      {% endif %}
+    {% else %}
+      <li><a href="#" class="disabled"><span aria-hidden="true">{{ site.data.ui-text[site.locale].pagination_previous }}</span></a></li>
+    {% endif %}
+
+    {% comment %} First page {% endcomment %}
+    {% if paginator.page == 1 %}
+      <li><a href="#" class="disabled current">1</a></li>
+    {% else %}
+      <li><a href="/archive/">1</a></li>
+    {% endif %}
+
+    {% assign page_start = 2 %}
+    {% if paginator.page > 4 %}
+      {% assign page_start = paginator.page | minus: 2 %}
+      {% comment %} Ellipsis for truncated links {% endcomment %}
+      <li><a href="#" class="disabled">&hellip;</a></li>
+    {% endif %}
+
+    {% assign page_end = paginator.total_pages | minus: 1 %}
+    {% assign pages_to_end = paginator.total_pages | minus: paginator.page %}
+    {% if pages_to_end > 4 %}
+      {% assign page_end = paginator.page | plus: 2 %}
+    {% endif %}
+
+    {% for index in (page_start..page_end) %}
+      {% if index == paginator.page %}
+        <li><a href="/archive/page{{ index }}/" class="disabled current">{{ index }}</a></li>
+      {% else %}
+        {% comment %} Distance from current page and this link {% endcomment %}
+        {% assign dist = paginator.page | minus: index %}
+        {% if dist < 0 %}
+          {% comment %} Distance must be a positive value {% endcomment %}
+          {% assign dist = 0 | minus: dist %}
+        {% endif %}
+        <li><a href="/archive/page{{ index }}/">{{ index }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% comment %} Ellipsis for truncated links {% endcomment %}
+    {% if pages_to_end > 3 %}
+      <li><a href="#" class="disabled">&hellip;</a></li>
+    {% endif %}
+
+    {% if paginator.page == paginator.total_pages %}
+      <li><a href="#" class="disabled current">{{ paginator.page }}</a></li>
+    {% else %}
+      <li><a href="/archive/page{{ paginator.total_pages }}/">{{ paginator.total_pages }}</a></li>
+    {% endif %}
+
+    {% comment %} Link next page {% endcomment %}
+    {% if paginator.next_page %}
+      <li><a href="/archive/page{{ paginator.next_page }}/">{{ site.data.ui-text[site.locale].pagination_next }}</a></li>
+    {% else %}
+      <li><a href="#" class="disabled"><span aria-hidden="true">{{ site.data.ui-text[site.locale].pagination_next }}</span></a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}

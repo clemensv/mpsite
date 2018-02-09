@@ -1,0 +1,31 @@
+---
+title:  Resources
+layout: archive
+permalink: /resources/
+author_profile: false
+date: 2016-08-24T09:25:00+00:02
+paginate:
+  collection: resources
+  per_page: 10
+  limit: false
+  permalink: /page:num/
+excerpt: "Resources"
+
+---
+
+
+{% include base_path %}
+
+<div style="clear:both">
+  <p>Resources</p>
+<div>
+
+<div class="grid__wrapper">
+  {% for post in site.resources %}
+    {% include archive-single.html type="list" %}
+  {% endfor %}
+</div>
+
+<hr>
+
+
